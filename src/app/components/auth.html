@@ -1,0 +1,72 @@
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+  <div class="card shadow p-4" style="width: 100%; max-width: 400px;">
+    
+    <h2 class="text-center mb-4 fw-bold">
+      {{ isLoginMode ? 'Iniciar Sesión' : 'Crear Cuenta' }}
+    </h2>
+
+    <!-- Mensajes de Alerta -->
+    <div *ngIf="errorMessage" class="alert alert-danger alert-dismissible fade show" role="alert">
+      {{ errorMessage }}
+    </div>
+
+    <div *ngIf="successMessage" class="alert alert-success alert-dismissible fade show" role="alert">
+      {{ successMessage }}
+    </div>
+
+    <!-- Formulario -->
+    <form (ngSubmit)="onSubmit()">
+      
+      <!-- Campo Nombre (Solo visible en modo Registro) -->
+      <div class="mb-3" *ngIf="!isLoginMode">
+        <label for="name" class="form-label">Nombre completo</label>
+        <input 
+          type="text" 
+          id="name" 
+          class="form-control" 
+          [(ngModel)]="name" 
+          name="name" 
+          placeholder="Tu nombre">
+      </div>
+
+      <!-- Campo Correo -->
+      <div class="mb-3">
+        <label for="email" class="form-label">Correo electrónico</label>
+        <input 
+          type="email" 
+          id="email" 
+          class="form-control" 
+          [(ngModel)]="email" 
+          name="email" 
+          required 
+          placeholder="correo@ejemplo.com">
+      </div>
+
+      <!-- Campo Contraseña -->
+      <div class="mb-3">
+        <label for="pass" class="form-label">Contraseña</label>
+        <input 
+          type="password" 
+          id="pass" 
+          class="form-control" 
+          [(ngModel)]="pass" 
+          name="pass" 
+          required 
+          placeholder="********">
+      </div>
+
+      <!-- Botón de Enviar -->
+      <button type="submit" class="btn btn-dark w-100 py-2 mb-3">
+        {{ isLoginMode ? 'Entrar' : 'Registrarse' }}
+      </button>
+    </form>
+
+    <!-- Botón para alternar entre Login y Registro -->
+    <div class="text-center">
+      <button type="button" class="btn btn-link text-decoration-none text-muted p-0" (click)="toggleMode()">
+        {{ isLoginMode ? '¿No tienes una cuenta? Regístrate aquí' : '¿Ya tienes cuenta? Inicia sesión' }}
+      </button>
+    </div>
+
+  </div>
+</div>

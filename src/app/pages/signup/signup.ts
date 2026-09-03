@@ -1,0 +1,123 @@
+// src/app/pages/signup/signup.ts
+import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { Router, RouterLink } from '@angular/router';
+import { AuthService, User } from '../../services/auth.services';
+
+@Component({
+  selector: 'app-signup',
+  standalone: true,
+  imports: [CommonModule, FormsModule, RouterLink],
+  template: `
+    <div class="container py-5 mt-5">
+      <div class="row justify-content-center">
+        <div class="col-md-5">
+          <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+            <h3 class="fw-normal mb-4 text-center" style="font-family: Georgia, serif;">Registrarse</h3>
+
+            <div *ngIf="errorMessage" class="alert alert-danger small mb-3">
+              {{ errorMessage }}
+            </div>
+
+            <form #signupForm="ngForm" (ngSubmit)="onSignup()" novalidate>
+              <div class="mb-3">
+                <label class="form-label small text-muted">Nombre:</label>
+                <input type="text" [(ngModel)]="user.name" name="name" #name="ngModel" required class="form-control"
+                       [ngClass]="{'is-invalid': name.invalid && name.touched}">
+                <div class="invalid-feedback">Por favor ingresa tu nombre.</div>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label small text-muted">Correo electrónico:</label>
+                <input type="email" [(ngModel)]="user.email" name="email" #email="ngModel" required email class="form-control"
+                       [ngClass]="{'is-invalid': email.invalid && email.touched}">
+                <div class="invalid-feedback">Ingresa un correo válido.</div>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label small text-muted">Contraseña:</label>
+                <input type="password" [(ngModel)]="user.password" (ngModelChange)="checkStrength()" name="password" #pass="ngModel" required minlength="6" class="form-control"
+                       [ngClass]="{'is-invalid': pass.invalid && pass.touched}">
+                
+                <!-- Barra de fortaleza de contraseña -->
+                <div class="progress mt-2" style="height: 6px;">
+                  <div class="progress-bar" [ngClass]="strengthClass" [style.width.%]="strengthPercent"></div>
+                </div>
+                <small class="text-muted d-block mt-1" style="font-size: 11px;">Fortaleza: <strong>{{ strengthLabel }}</strong></small>
+              </div>
+
+              <div class="mb-4">
+                <label class="form-label small text-muted">Confirmar Contraseña:</label>
+                <input type="password" [(ngModel)]="confirmPassword" name="confirmPassword" #confirmModel="ngModel" required class="form-control"
+                       [ngClass]="{'is-invalid': (confirmPassword !== user.password && signupForm.submitted) || (confirmModel.touched && confirmPassword !== user.password)}">
+                <div *ngIf="(confirmPassword !== user.password && signupForm.submitted) || (confirmModel.touched && confirmPassword !== user.password)" class="text-danger small mt-1">
+                  Las contraseñas no coinciden.
+                </div>
+              </div>
+
+              <button type="submit" [disabled]="signupForm.invalid || confirmPassword !== user.password" class="btn btn-dark w-100 rounded-pill py-2 text-uppercase fw-semibold">
+                Registrarme
+              </button>
+            </form>
+
+            <p class="text-center small text-muted mt-3 mb-0">
+              ¿Ya tienes cuenta? <a routerLink="/login" class="text-dark fw-bold">Inicia sesión</a>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  `
+})
+export class Signup {
+  user: User = { name: '', email: '', password: '' };
+  confirmPassword = '';
+  errorMessage = '';
+
+  strengthPercent = 0;
+  strengthClass = 'bg-danger';
+  strengthLabel = 'Débil';
+
+  constructor(private authService: AuthService, private router: Router) {}
+
+  checkStrength() {
+    const pass = this.user.password || '';
+    let score = 0;
+
+    if (pass.length >= 6) score += 25;
+    if (pass.match(/[A-Z]/)) score += 25;
+    if (pass.match(/[0-9]/)) score += 25;
+    if (pass.match(/[^a-zA-Z0-9]/)) score += 25;
+
+    this.strengthPercent = score;
+
+    if (score <= 25) {
+      this.strengthClass = 'bg-danger';
+      this.strengthLabel = 'Débil';
+    } else if (score <= 75) {
+      this.strengthClass = 'bg-warning';
+      this.strengthLabel = 'Media';
+    } else {
+      this.strengthClass = 'bg-success';
+      this.strengthLabel = 'Fuerte';
+    }
+  }
+
+  onSignup() {
+    this.errorMessage = '';
+    
+    if (this.user.password !== this.confirmPassword) {
+      this.errorMessage = 'Las contraseñas no coinciden.';
+      return;
+    }
+
+    const success = this.authService.register(this.user);
+
+    if (success) {
+      this.router.navigate(['/checkout']);
+    } else {
+      this.errorMessage = 'Este correo electrónico ya está registrado.';
+    }
+  }
+}

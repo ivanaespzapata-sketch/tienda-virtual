@@ -1,0 +1,209 @@
+<!-- HERO BANNER CON LA FOTO Y TEXTOS BLANCOS -->
+<section class="position-relative d-flex align-items-center text-white min-vh-100" 
+         style="background: linear-gradient(rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.15)), url('https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=1600') center/cover no-repeat;">
+  <div class="container pt-5">
+    <div class="row justify-content-end">
+      <div class="col-md-6 col-lg-5 text-start pe-lg-5">
+        <p class="fst-italic fs-5 mb-1 text-white-50" style="font-family: Georgia, serif;">Joyería fina</p>
+        <h1 class="display-4 fw-normal text-uppercase mb-3 text-white" style="font-family: Georgia, serif; letter-spacing: 2px; line-height: 1.2;">
+          UN REGALO PARA<br>ALGUIEN ESPECIAL
+        </h1>
+        <p class="small text-white-50 mb-4 fw-light" style="line-height: 1.6;">
+          Descubre colecciones exclusivas diseñadas con la más alta elegancia. Piezas finas únicas creadas para momentos inolvidables.
+        </p>
+        <div class="d-flex gap-3">
+          <a href="#coleccion" class="btn btn-light rounded-0 px-4 py-2 text-uppercase fw-semibold fs-7" style="letter-spacing: 1px;">
+            COMPRA AHORA
+          </a>
+          <a href="#coleccion" class="btn btn-outline-light rounded-0 px-4 py-2 text-uppercase fw-semibold fs-7" style="letter-spacing: 1px;">
+            VER MÁS
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SECCIÓN INFERIOR EDITORIAL DE JOYERÍA -->
+<section id="coleccion" class="py-5 bg-white">
+  <div class="container py-4">
+    <div class="row align-items-center g-4">
+      <!-- MOSAICO FOTOGRÁFICO DE LA IZQUIERDA -->
+      <div class="col-md-6">
+        <div class="row g-2 align-items-center">
+          <div class="col-6">
+            <img src="https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=600" alt="Modelo Joyería" class="img-fluid rounded-0 shadow-sm w-100">
+          </div>
+          <div class="col-6">
+            <img src="https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=600" alt="Colgante de Oro" class="img-fluid rounded-0 shadow-sm w-100">
+          </div>
+        </div>
+      </div>
+
+      <!-- TEXTO DE LA DERECHA -->
+      <div class="col-md-6 ps-lg-5 text-center text-md-start">
+        <p class="fst-italic text-warning mb-1" style="font-family: Georgia, serif; color: #c89d7c !important;">El detalle más especial</p>
+        <h2 class="display-6 text-uppercase fw-normal mb-3" style="font-family: Georgia, serif; letter-spacing: 3px; color: #2a2a2a;">
+          TIENDA<br>DE JOYERÍA
+        </h2>
+        <div class="border-start border-warning border-2 ps-3 my-3" style="border-color: #c89d7c !important;">
+          <p class="text-muted small mb-0 fw-light">
+            Diseños sofisticados de alta gama con diamantes y metales preciosos seleccionados a mano.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BARRA DE BÚSQUEDA PREDICTIVA Y FILTROS -->
+<div class="container my-4 p-4 bg-light rounded-4 shadow-sm">
+  <div class="row g-3 align-items-center">
+    <!-- Buscador Predictivo -->
+    <div class="col-12 col-md-4">
+      <div class="input-group">
+        <span class="input-group-text bg-white border-end-0"><i class="bi bi-search"></i></span>
+        <input type="text" [(ngModel)]="searchQuery" (ngModelChange)="applyFilters()" class="form-control border-start-0" placeholder="Buscar joya...">
+      </div>
+    </div>
+
+    <!-- Filtro por Categoría -->
+    <div class="col-6 col-md-3">
+      <select [(ngModel)]="selectedCategory" (change)="applyFilters()" class="form-select">
+        <option *ngFor="let cat of categoriesList" [value]="cat">{{ cat }}</option>
+      </select>
+    </div>
+
+    <!-- Filtro por Precio Máximo -->
+    <div class="col-6 col-md-3">
+      <label class="form-label small text-muted mb-0">Precio Máx: ${{ maxPrice }}</label>
+      <input type="range" [(ngModel)]="maxPrice" (input)="applyFilters()" min="50" max="300" step="10" class="form-range">
+    </div>
+
+    <!-- Ordenamiento -->
+    <div class="col-12 col-md-2">
+      <select [(ngModel)]="sortOrder" (change)="applyFilters()" class="form-select">
+        <option value="default">Ordenar por</option>
+        <option value="price-asc">Precio: Menor a Mayor</option>
+        <option value="price-desc">Precio: Mayor a Menor</option>
+      </select>
+    </div>
+  </div>
+</div>
+
+<!-- SECCIÓN DE PRODUCTOS (NEW ARRIVALS) -->
+<section class="py-5 bg-white border-top">
+  <div class="container py-3">
+    <h2 class="text-center display-6 fw-normal mb-5" style="font-family: Georgia, serif; color: #333;">Nuevas tendencias</h2>
+
+    <div class="row g-4 align-items-stretch">
+      <!-- TARJETA PROMOCIONAL IZQUIERDA -->
+      <div class="col-12 col-md-6 col-lg-3">
+        <div class="card border-0 h-100 p-4 text-center rounded-4 d-flex flex-column justify-content-between position-relative overflow-hidden" 
+             style="background-color: #f7ebe1;">
+          <div class="pt-3">
+            <p class="fst-italic fs-4 mb-2" style="font-family: Georgia, serif; color: #4a3e3d;">Fresh Gems</p>
+            <p class="small text-muted fw-light px-2">Descubre la nueva joyería que se ha agregado.</p>
+          </div>
+          <div class="my-3">
+            <img src="https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=400" alt="Fresh Gems" class="img-fluid rounded-3 shadow-sm mb-3">
+          </div>
+        </div>
+      </div>
+
+      <!-- LISTADO DE PRODUCTOS FILTRADOS -->
+      <div *ngFor="let product of filteredProducts" class="col-12 col-sm-6 col-md-4 col-lg-3">
+        <div class="card h-100 border-0 bg-transparent text-start">
+          <!-- IMAGEN CON BOTÓN WISHLIST Y QUICK VIEW -->
+          <div class="position-relative rounded-4 overflow-hidden mb-3" style="background-color: #f6f5f3; min-height: 250px;">
+            
+            <!-- Botón Favoritos -->
+            <button type="button" (click)="$event.stopPropagation(); $event.preventDefault(); toggleWishlist(product.id)" class="btn btn-sm btn-white rounded-circle position-absolute top-0 end-0 m-3 shadow-sm z-3" title="Favoritos">
+              <i class="bi" [ngClass]="isInWishlist(product.id) ? 'bi-heart-fill text-danger' : 'bi-heart'"></i>
+            </button>
+
+            <!-- Botón Vista Previa Rápida -->
+            <button type="button" (click)="$event.stopPropagation(); $event.preventDefault(); openQuickView(product)" class="btn btn-sm btn-white rounded-circle position-absolute bottom-0 end-0 m-3 shadow-sm z-3" title="Vista Rápida">
+              <i class="bi bi-eye"></i>
+            </button>
+
+            <a [routerLink]="['/product', product.id]" class="d-flex align-items-center justify-content-center h-100 p-3">
+              <img [src]="product.id === 4 ? 'https://images.unsplash.com/photo-1573408301185-9146fe634ad0?auto=format&fit=crop&w=600&q=80' : product.image" [alt]="product.title" class="img-fluid" style="max-height: 190px; object-fit: contain;">
+            </a>
+          </div>
+
+          <!-- DETALLES DE CADA PRODUCTO -->
+          <div class="px-1 d-flex flex-column flex-grow-1">
+            <h6 class="fw-normal text-dark mb-1 text-truncate" style="font-size: 14px;">
+              <a [routerLink]="['/product', product.id]" class="text-decoration-none text-dark">{{ product.title }}</a>
+            </h6>
+            <p class="text-uppercase text-muted small mb-2" style="font-size: 10px; letter-spacing: 0.5px;">{{ product.category }}</p>
+            
+            <div class="mt-auto d-flex align-items-center justify-content-between pt-1">
+              <span class="fw-semibold text-dark fs-6">${{ product.price | number:'1.2-2' }}</span>
+              <button 
+                type="button"
+                (click)="toggleCart(product)" 
+                class="btn btn-sm rounded-circle p-1 d-flex align-items-center justify-content-center" 
+                [ngClass]="isInCart(product.id) ? 'btn-danger' : 'btn-outline-dark'"
+                style="width: 32px; height: 32px;" 
+                [title]="isInCart(product.id) ? 'Eliminar del Carrito' : 'Agregar al Carrito'"
+              >
+                <i class="bi" [ngClass]="isInCart(product.id) ? 'bi-trash-fill' : 'bi-plus-lg'"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MODAL QUICK VIEW -->
+<div *ngIf="selectedProduct" class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.6); z-index: 1055;">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content border-0 rounded-4 overflow-hidden shadow-lg">
+      <div class="modal-body p-0 position-relative">
+        
+        <button (click)="closeQuickView()" type="button" class="btn-close position-absolute top-0 end-0 m-3 z-3" aria-label="Close"></button>
+        
+        <div class="row g-0">
+          <!-- Imagen del producto -->
+          <div class="col-md-6 bg-light d-flex align-items-center justify-content-center p-4">
+            <img [src]="selectedProduct.id === 4 ? 'https://images.unsplash.com/photo-1573408301185-9146fe634ad0?auto=format&fit=crop&w=600&q=80' : selectedProduct.image" [alt]="selectedProduct.title" class="img-fluid rounded-3" style="max-height: 280px; object-fit: contain;">
+          </div>
+          
+          <!-- Información y botón -->
+          <div class="col-md-6 p-4 d-flex flex-column justify-content-center">
+            <span class="badge bg-secondary mb-2 align-self-start text-uppercase">{{ selectedProduct.category }}</span>
+            <h4 class="fw-bold text-dark mb-2">{{ selectedProduct.title }}</h4>
+            <h3 class="text-dark fw-semibold mb-3">${{ selectedProduct.price | number:'1.2-2' }}</h3>
+            <p class="text-muted small mb-4">{{ selectedProduct.description }}</p>
+            
+            <button 
+              type="button"
+              (click)="toggleCart(selectedProduct); closeQuickView()" 
+              class="btn rounded-pill py-2 text-uppercase fw-semibold"
+              [ngClass]="isInCart(selectedProduct.id) ? 'btn-danger' : 'btn-dark'"
+            >
+              <i class="bi me-2" [ngClass]="isInCart(selectedProduct.id) ? 'bi-trash-fill' : 'bi-bag-plus'"></i>
+              {{ isInCart(selectedProduct.id) ? 'Eliminar del Carrito' : 'Agregar al Carrito' }}
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- NOTIFICACIÓN FLOTANTE (TOAST) -->
+<div 
+  *ngIf="toastMessage" 
+  class="position-fixed bottom-0 end-0 m-4 p-3 rounded-3 shadow-lg text-white z-3 d-flex align-items-center gap-2"
+  [ngClass]="toastType === 'success' ? 'bg-dark' : 'bg-danger'"
+  style="transition: all 0.3s ease-in-out;"
+>
+  <i class="bi" [ngClass]="toastType === 'success' ? 'bi-check-circle-fill text-success' : 'bi-trash-fill'"></i>
+  <span>{{ toastMessage }}</span>
+</div>

@@ -1,0 +1,73 @@
+<div class="container py-5 my-5">
+  <div *ngIf="product; else notFound" class="row g-5 align-items-center">
+    
+    <!-- Galería o Imagen Principal del Producto -->
+    <div class="col-md-6">
+      <div class="bg-light p-5 rounded-4 d-flex align-items-center justify-content-center shadow-sm" style="min-height: 400px;">
+        <img [src]="product.image" [alt]="product.title" class="img-fluid rounded-3" style="max-height: 350px; object-fit: contain;">
+      </div>
+    </div>
+
+    <!-- Título, Precio y Selector de Cantidad -->
+    <div class="col-md-6">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb mb-2">
+          <li class="breadcrumb-item"><a routerLink="/" class="text-decoration-none text-muted">Inicio</a></li>
+          <li class="breadcrumb-item text-uppercase text-dark">{{ product.category }}</li>
+        </ol>
+      </nav>
+
+      <h1 class="display-5 fw-normal text-dark mb-3" style="font-family: Georgia, serif;">{{ product.title }}</h1>
+      <h3 class="text-dark fw-semibold mb-4">${{ product.price | number:'1.2-2' }}</h3>
+
+      <p class="text-muted mb-4" style="line-height: 1.6;">
+        {{ product.description }}
+      </p>
+
+      <!-- Selector de Cantidad -->
+      <div class="d-flex align-items-center mb-4 gap-3">
+        <span class="text-muted small fw-bold text-uppercase">Cantidad:</span>
+        <div class="input-group" style="width: 130px;">
+          <button class="btn btn-outline-dark" type="button" (click)="decrementQuantity()">-</button>
+          <input type="text" class="form-control text-center bg-white" [value]="quantity" readonly>
+          <button class="btn btn-outline-dark" type="button" (click)="incrementQuantity()">+</button>
+        </div>
+      </div>
+
+      <!-- Botón de Agregar al Carrito de Alta Visibilidad -->
+      <div class="d-grid gap-2 mb-4">
+        <button 
+          type="button" 
+          (click)="addToCart()" 
+          class="btn btn-dark btn-lg rounded-pill py-3 text-uppercase fw-bold shadow-sm"
+          style="letter-spacing: 1px;"
+        >
+          <i class="bi bi-bag-plus me-2"></i> Agregar al Carrito
+        </button>
+        <a routerLink="/" class="btn btn-outline-secondary rounded-pill py-2 text-uppercase fs-7">
+          Seguir comprando
+        </a>
+      </div>
+
+      <!-- Especificaciones Técnicas y Detalles -->
+      <div class="border-top pt-4 mt-4">
+        <h6 class="text-uppercase fw-bold mb-3" style="font-size: 13px; letter-spacing: 1px;">Especificaciones Técnicas</h6>
+        <ul class="list-unstyled text-muted small lh-lg">
+          <li><i class="bi bi-check-circle text-success me-2"></i> Material seleccionado de alta durabilidad.</li>
+          <li><i class="bi bi-check-circle text-success me-2"></i> Acabado artesanal de alta gama.</li>
+          <li><i class="bi bi-check-circle text-success me-2"></i> Garantía oficial de autenticidad incluida.</li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Plantilla si no encuentra el producto -->
+  <ng-template #notFound>
+    <div class="text-center py-5">
+      <h2 class="text-muted mb-3">Producto no encontrado</h2>
+      <p class="text-muted mb-4">Lo sentimos, la joya que buscas no está disponible o el enlace es incorrecto.</p>
+      <a routerLink="/" class="btn btn-dark rounded-pill px-4 py-2">Volver al inicio</a>
+    </div>
+  </ng-template>
+</div>

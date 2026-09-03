@@ -1,0 +1,45 @@
+/* Transición suave para todos los enlaces del menú */
+.navbar-nav .nav-link {
+  transition: all 0.3s ease-in-out;
+  display: inline-block;
+  opacity: 0.8;
+}
+
+/* Efecto al pasar el cursor (Hover): eleva, ilumina a blanco y aplica negrita */
+.navbar-nav .nav-link:hover {
+  opacity: 1 !important;
+  color: #ffffff !important;
+  font-weight: 600 !important;
+  transform: translateY(-3px);
+  text-shadow: 0 2px 4px rgba(255, 255, 255, 0.2);
+}
+
+/* Sombras permanentes para legibilidad sobre la foto de fondo */
+.navbar-brand,
+.navbar-nav .nav-link,
+.navbar div a,
+.navbar div span,
+.navbar div i {
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6), 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+/* Transición suave para todos los enlaces del menú */
+.navbar-nav .nav-link {
+  transition: all 0.3s ease-in-out;
+  display: inline-block;
+  opacity: 0.95;
+}
+
+/* Efecto Hover: Eleva, resalta en blanco y aumenta grosor */
+.navbar-nav .nav-link:hover {
+  opacity: 1 !important;
+  color: #ffffff !important;
+  font-weight: 600 !important;
+  transform: translateY(-3px);
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.9), 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+/* Fondo degradado suave opcional para garantizar contraste en la parte superior */
+.navbar {
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.35) 0%, rgba(0, 0, 0, 0) 100%);
+}

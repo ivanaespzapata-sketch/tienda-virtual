@@ -1,0 +1,164 @@
+<div class="container py-5 mt-5">
+  
+  <!-- PANTALLA DE CONFIRMACIÓN (THANK YOU PAGE) -->
+  <div *ngIf="isCompleted" class="row justify-content-center">
+    <div class="col-md-7 text-center py-5 bg-white rounded-4 shadow-sm">
+      <div class="mb-4">
+        <i class="bi bi-check-circle-fill text-success" style="font-size: 4rem;"></i>
+      </div>
+      <h2 class="fw-normal mb-3" style="font-family: Georgia, serif;">¡Gracias por tu compra, {{ customerName }}!</h2>
+      <p class="text-muted mb-4">Tu pedido ha sido procesado exitosamente y ya se encuentra en preparación.</p>
+      
+      <div class="p-3 bg-light rounded-3 d-inline-block mb-4 text-start px-4">
+        <p class="mb-1 small text-muted">Número de Orden:</p>
+        <h5 class="fw-bold text-dark mb-0">#{{ orderNumber }}</h5>
+      </div>
+
+      <div>
+        <a routerLink="/" class="btn btn-dark rounded-pill px-5 py-3 text-uppercase fw-bold shadow-sm" style="letter-spacing: 1px;">
+          Volver a la Tienda
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- FLUJO NORMAL DE CHECKOUT -->
+  <div *ngIf="!isCompleted">
+    <h2 class="display-6 text-uppercase fw-normal mb-4" style="font-family: Georgia, serif;">Resumen de Compra</h2>
+
+    <!-- MENSAJE CARRITO VACÍO -->
+    <div *ngIf="cartItems.length === 0" class="text-center py-5 bg-white rounded-4 shadow-sm">
+      <i class="bi bi-bag-x fs-1 text-muted mb-3 d-block"></i>
+      <h4 class="fw-light">Tu carrito está vacío</h4>
+      <a routerLink="/" class="btn btn-dark rounded-pill px-4 mt-3">Volver a la Tienda</a>
+    </div>
+
+    <div *ngIf="cartItems.length > 0" class="row g-4">
+      <!-- COLUMNA IZQUIERDA: PRODUCTOS SELECCIONADOS -->
+      <div class="col-lg-7">
+        <div class="card border-0 shadow-sm rounded-4 p-4 bg-white mb-4">
+          <h5 class="fw-normal mb-4 border-bottom pb-3" style="font-family: Georgia, serif;">Productos Seleccionados</h5>
+          
+          <div *ngFor="let item of cartItems" class="d-flex align-items-center justify-content-between py-3 border-bottom">
+            <div class="d-flex align-items-center gap-3">
+              <img [src]="item.product.image" [alt]="item.product.title" class="rounded-3" style="width: 80px; height: 80px; object-fit: contain; background-color: #f8f8f8;">
+              <div>
+                <h6 class="mb-1 fw-semibold text-dark">{{ item.product.title }}</h6>
+                <p class="text-muted small mb-0">${{ item.product.price | number:'1.2-2' }} c/u</p>
+              </div>
+            </div>
+
+            <div class="d-flex align-items-center gap-4">
+              <!-- SELECTOR CANTIDAD -->
+              <div class="input-group input-group-sm" style="width: 100px;">
+                <button (click)="updateQuantity(item.product.id, item.quantity - 1)" class="btn btn-outline-secondary">-</button>
+                <span class="form-control text-center bg-white">{{ item.quantity }}</span>
+                <button (click)="updateQuantity(item.product.id, item.quantity + 1)" class="btn btn-outline-secondary">+</button>
+              </div>
+
+              <span class="fw-bold text-dark fs-6" style="width: 90px; text-align: right;">
+                ${{ (item.product.price * item.quantity) | number:'1.2-2' }}
+              </span>
+
+              <button (click)="removeItem(item.product.id)" class="btn btn-link text-danger p-0"><i class="bi bi-trash fs-5"></i></button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- COLUMNA DERECHA: FORMULARIO + CUPÓN + RESUMEN -->
+      <div class="col-lg-5">
+        <form #checkoutForm="ngForm" (ngSubmit)="processOrder(checkoutForm.value)" novalidate>
+          
+          <!-- FORMULARIO DE ENVÍO -->
+          <div class="card border-0 shadow-sm rounded-4 p-4 bg-white mb-4">
+            <h5 class="fw-normal mb-4 border-bottom pb-3" style="font-family: Georgia, serif;">Datos de Envío y Pago</h5>
+            
+            <div class="mb-3">
+              <label class="form-label small text-muted">Nombre Completo *</label>
+              <input type="text" name="name" ngModel #name="ngModel" required class="form-control"
+                     [ngClass]="{'is-invalid': name.invalid && name.touched, 'is-valid': name.valid && name.touched}">
+              <div class="invalid-feedback">Por favor ingresa tu nombre.</div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label small text-muted">Correo Electrónico *</label>
+              <input type="email" name="email" ngModel #email="ngModel" required email class="form-control"
+                     [ngClass]="{'is-invalid': email.invalid && email.touched, 'is-valid': email.valid && email.touched}">
+              <div class="invalid-feedback">Ingresa un correo electrónico válido.</div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label small text-muted">Dirección de Entrega *</label>
+              <input type="text" name="address" ngModel #address="ngModel" required class="form-control"
+                     [ngClass]="{'is-invalid': address.invalid && address.touched, 'is-valid': address.valid && address.touched}">
+              <div class="invalid-feedback">Ingresa tu dirección de envío.</div>
+            </div>
+          </div>
+
+          <!-- RESUMEN DE LA ORDEN Y CUPÓN -->
+          <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+            <h5 class="fw-normal mb-4 border-bottom pb-3" style="font-family: Georgia, serif;">Resumen de la Orden</h5>
+
+            <!-- INPUT CÓDIGO POSTAL -->
+            <div class="mb-3">
+              <label class="form-label small text-muted fw-semibold">Calcular Envío (Código Postal)</label>
+              <div class="input-group">
+                <input type="text" [(ngModel)]="postalCode" name="postalCode" placeholder="Ej. 28001" class="form-control form-control-sm" [ngModelOptions]="{standalone: true}">
+                <button type="button" (click)="calculateShipping()" class="btn btn-outline-dark btn-sm">Calcular</button>
+              </div>
+              <small *ngIf="shippingCalculated" class="text-success mt-1 d-block fw-semibold" style="font-size: 11px;">
+                <i class="bi bi-check-circle-fill me-1"></i> Envío actualizado para C.P. {{ postalCode }}
+              </small>
+            </div>
+
+            <!-- SECCIÓN DE CUPÓN DE DESCUENTO -->
+            <div class="mb-4">
+              <label class="form-label small text-muted fw-semibold">Código de Descuento (Prueba PROFE100)</label>
+              <div class="input-group">
+                <input type="text" [(ngModel)]="couponCode" name="couponCode" placeholder="Ej. PROFE100" class="form-control form-control-sm text-uppercase" [ngModelOptions]="{standalone: true}">
+                <button type="button" (click)="applyCoupon()" class="btn btn-dark btn-sm">Aplicar</button>
+              </div>
+              <small *ngIf="couponMessage" class="mt-1 d-block fw-semibold" [ngClass]="{'text-success': !couponError, 'text-danger': couponError}" style="font-size: 11px;">
+                {{ couponMessage }}
+              </small>
+            </div>
+
+            <div class="d-flex justify-content-between mb-2 text-muted">
+              <span>Subtotal</span>
+              <span class="fw-semibold text-dark">${{ subtotal | number:'1.2-2' }}</span>
+            </div>
+
+            <div *ngIf="couponApplied" class="d-flex justify-content-between mb-2 text-success">
+              <span>Descuento Cupón</span>
+              <span class="fw-semibold">- ${{ discountAmount | number:'1.2-2' }}</span>
+            </div>
+
+            <div class="d-flex justify-content-between mb-2 text-muted">
+              <span>Costos de Envío</span>
+              <span class="fw-semibold text-dark">${{ shippingCost | number:'1.2-2' }}</span>
+            </div>
+
+            <div class="d-flex justify-content-between mb-3 text-muted">
+              <span>Impuestos (IVA 16%)</span>
+              <span class="fw-semibold text-dark">${{ taxAmount | number:'1.2-2' }}</span>
+            </div>
+
+            <hr>
+
+            <div class="d-flex justify-content-between mb-4">
+              <span class="fw-bold fs-5">Total</span>
+              <span class="fw-bold fs-4 text-dark">${{ total | number:'1.2-2' }}</span>
+            </div>
+
+            <!-- Botón Proceder al Pago -->
+            <button type="submit" [disabled]="checkoutForm.invalid" class="btn btn-dark w-100 rounded-pill py-3 text-uppercase fw-semibold tracking-wider mt-2">
+              Proceder al Pago
+            </button>
+          </div>
+
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

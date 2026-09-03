@@ -1,0 +1,27 @@
+:root {
+  --rosa-principal: #d88a8a;
+  --rosa-suave: #fdf6f6;
+  --crema-fondo: #faf7f2;
+  --texto-oscuro: #2c2c2c;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: var(--crema-fondo);
+  color: var(--texto-oscuro);
+}
+
+.bg-rosa-hero {
+  background: linear-gradient(135deg, #fce4ec 0%, #f8bbd0 100%);
+}
+
+.btn-rosa {
+  background-color: var(--rosa-principal);
+  color: white;
+  border: none;
+}
+
+.btn-rosa:hover {
+  background-color: #c77777;
+  color: white;
+}

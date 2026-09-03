@@ -1,0 +1,42 @@
+<!-- src/app/pages/login/login.component.html -->
+<div class="container py-5 mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-5">
+      <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+        <h3 class="fw-normal mb-4 text-center" style="font-family: Georgia, serif;">Iniciar Sesión</h3>
+
+        <div *ngIf="showRedirectMessage" class="alert alert-warning small mb-3">
+          Debes iniciar sesión para poder continuar con tu compra.
+        </div>
+
+        <div *ngIf="errorMessage" class="alert alert-danger small mb-3">
+          {{ errorMessage }}
+        </div>
+
+        <form #loginForm="ngForm" (ngSubmit)="onLogin()" novalidate>
+          <div class="mb-3">
+            <label class="form-label small text-muted">Correo Electrónico *</label>
+            <input type="email" [(ngModel)]="email" name="email" #emailModel="ngModel" required email class="form-control"
+                   [ngClass]="{'is-invalid': emailModel.invalid && emailModel.touched}">
+            <div class="invalid-feedback">Ingresa un correo válido.</div>
+          </div>
+
+          <div class="mb-4">
+            <label class="form-label small text-muted">Contraseña *</label>
+            <input type="password" [(ngModel)]="password" name="password" #passModel="ngModel" required class="form-control"
+                   [ngClass]="{'is-invalid': passModel.invalid && passModel.touched}">
+            <div class="invalid-feedback">Ingresa tu contraseña.</div>
+          </div>
+
+          <button type="submit" [disabled]="loginForm.invalid" class="btn btn-dark w-100 rounded-pill py-2 text-uppercase fw-semibold">
+            Entrar
+          </button>
+        </form>
+
+        <p class="text-center small text-muted mt-3 mb-0">
+          ¿No tienes cuenta? <a routerLink="/signup" class="text-dark fw-bold">Regístrate aquí</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
