@@ -1,3 +1,4 @@
+
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -17,19 +18,33 @@ export class Login {
   showRedirectMessage = false;
   errorMessage = '';
 
-  constructor(private shopService: ShopService, private router: Router) {}
+  constructor(
+    private shopService: ShopService,
+    private router: Router
+  ) {}
 
-  onLogin(): void {
+  async onLogin(): Promise<void> {
+    this.errorMessage = '';
+
     if (!this.email || !this.password) {
       this.errorMessage = 'Por favor completa todos los campos.';
       return;
     }
-    
-    const success = this.shopService.login(this.email, this.password);
-    if (success) {
-      this.router.navigate(['/']);
-    } else {
-      this.errorMessage = 'Credenciales incorrectas.';
+
+    try {
+      const success = await this.shopService.login(
+        this.email,
+        this.password
+      );
+
+      if (success) {
+        this.router.navigate(['/']);
+      } else {
+        this.errorMessage = 'Credenciales incorrectas.';
+      }
+    } catch (error) {
+      console.error('Error al iniciar sesión:', error);
+      this.errorMessage = 'No se pudo iniciar sesión.';
     }
   }
 }

@@ -1,6 +1,20 @@
-// src/app/services/auth.service.ts
-import { Injectable } from '@angular/core';
-import { Router } from '@angular/router';
+
+import { Injectable, NgZone } from '@angular/core';
+import { BehaviorSubject } from 'rxjs';
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut,
+  onAuthStateChanged,
+  updateProfile
+} from 'firebase/auth';
+import {
+  doc,
+  getDoc,
+  setDoc,
+  serverTimestamp
+} from 'firebase/firestore';
+import { auth, db } from '../firebase.config';
 
 export interface User {
   name: string;
@@ -12,51 +26,114 @@ export interface User {
   providedIn: 'root'
 })
 export class AuthService {
-  private currentUserKey = 'active_user';
-  private usersKey = 'registered_users';
 
-  constructor(private router: Router) {}
+  private subject = new BehaviorSubject<User | null>(null);
+  currentUser$ = this.subject.asObservable();
 
-  register(user: User): boolean {
-    const users: User[] = JSON.parse(localStorage.getItem(this.usersKey) || '[]');
-    const exists = users.find(u => u.email === user.email);
-    
-    if (exists) {
+  constructor(private zone: NgZone) {
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('registered_users');
+      localStorage.removeItem('active_user');
+      localStorage.removeItem('my_shop_current_user');
+    }
+
+    onAuthStateChanged(auth, user => {
+      this.zone.run(() => {
+        this.subject.next(user ? {
+          name: user.displayName || user.email?.split('@')[0] || '',
+          email: user.email || ''
+        } : null);
+      });
+    });
+  }
+
+  private async saveProfile(
+    uid: string,
+    name: string,
+    email: string
+  ) {
+    const ref = doc(db, 'usuarios', uid);
+
+    if (!(await getDoc(ref)).exists()) {
+      await setDoc(ref, {
+        nombre: name,
+        correo: email,
+        rol: 'cliente',
+        fechaRegistro: serverTimestamp()
+      });
+    }
+  }
+
+  async register(user: User): Promise<boolean> {
+    try {
+      const result = await createUserWithEmailAndPassword(
+        auth,
+        user.email.trim(),
+        user.password || ''
+      );
+
+      await updateProfile(result.user, {
+        displayName: user.name.trim()
+      });
+
+      await this.saveProfile(
+        result.user.uid,
+        user.name.trim(),
+        result.user.email || user.email
+      );
+
+      this.subject.next({
+        name: user.name.trim(),
+        email: result.user.email || user.email
+      });
+
+      return true;
+
+    } catch (error) {
+      console.error('Error de registro:', error);
       return false;
     }
-
-    users.push(user);
-    localStorage.setItem(this.usersKey, JSON.stringify(users));
-    this.setCurrentUser({ name: user.name, email: user.email });
-    return true;
   }
 
-  login(email: string, pass: string): boolean {
-    const users: User[] = JSON.parse(localStorage.getItem(this.usersKey) || '[]');
-    const user = users.find(u => u.email === email && u.password === pass);
-    
-    if (user) {
-      this.setCurrentUser({ name: user.name, email: user.email });
+  async login(email: string, pass: string): Promise<boolean> {
+    try {
+      const result = await signInWithEmailAndPassword(
+        auth,
+        email.trim(),
+        pass
+      );
+
+      const name = result.user.displayName || email.split('@')[0];
+
+      await this.saveProfile(
+        result.user.uid,
+        name,
+        result.user.email || email
+      );
+
+      this.subject.next({
+        name,
+        email: result.user.email || email
+      });
+
       return true;
-    }
-    return false;
-  }
 
-  setCurrentUser(user: User): void {
-    localStorage.setItem(this.currentUserKey, JSON.stringify(user));
+    } catch (error) {
+      console.error('Error de inicio de sesión:', error);
+      return false;
+    }
   }
 
   getCurrentUser(): User | null {
-    const user = localStorage.getItem(this.currentUserKey);
-    return user ? JSON.parse(user) : null;
+    return this.subject.value;
   }
 
   isLoggedIn(): boolean {
-    return this.getCurrentUser() !== null;
+    return auth.currentUser !== null;
   }
 
-  logout(): void {
-    localStorage.removeItem(this.currentUserKey);
-    this.router.navigate(['/login']);
+  async logout(): Promise<void> {
+    await signOut(auth);
+    this.subject.next(null);
   }
 }

@@ -1,7 +1,9 @@
-import { Component } from '@angular/core';
+
+import { Component, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { HeaderComponent } from './components/header/header';
 import { Footer } from './components/footer/footer';
+import { probarFirebase } from './firebase-test';
 
 @Component({
   selector: 'app-root',
@@ -10,6 +12,10 @@ import { Footer } from './components/footer/footer';
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
-export class App {
+export class App implements OnInit {
   title = 'tienda-virtual';
+
+  ngOnInit(): void {
+    probarFirebase();
+  }
 }

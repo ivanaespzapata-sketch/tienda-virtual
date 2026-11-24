@@ -1,4 +1,4 @@
-// src/app/pages/signup/signup.ts
+
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -39,8 +39,7 @@ import { AuthService, User } from '../../services/auth.services';
                 <label class="form-label small text-muted">Contraseña:</label>
                 <input type="password" [(ngModel)]="user.password" (ngModelChange)="checkStrength()" name="password" #pass="ngModel" required minlength="6" class="form-control"
                        [ngClass]="{'is-invalid': pass.invalid && pass.touched}">
-                
-                <!-- Barra de fortaleza de contraseña -->
+
                 <div class="progress mt-2" style="height: 6px;">
                   <div class="progress-bar" [ngClass]="strengthClass" [style.width.%]="strengthPercent"></div>
                 </div>
@@ -56,8 +55,8 @@ import { AuthService, User } from '../../services/auth.services';
                 </div>
               </div>
 
-              <button type="submit" [disabled]="signupForm.invalid || confirmPassword !== user.password" class="btn btn-dark w-100 rounded-pill py-2 text-uppercase fw-semibold">
-                Registrarme
+              <button type="submit" [disabled]="signupForm.invalid || confirmPassword !== user.password || isLoading" class="btn btn-dark w-100 rounded-pill py-2 text-uppercase fw-semibold">
+                {{ isLoading ? 'Registrando...' : 'Registrarme' }}
               </button>
             </form>
 
@@ -74,12 +73,16 @@ export class Signup {
   user: User = { name: '', email: '', password: '' };
   confirmPassword = '';
   errorMessage = '';
+  isLoading = false;
 
   strengthPercent = 0;
   strengthClass = 'bg-danger';
   strengthLabel = 'Débil';
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(
+    private authService: AuthService,
+    private router: Router
+  ) {}
 
   checkStrength() {
     const pass = this.user.password || '';
@@ -104,20 +107,43 @@ export class Signup {
     }
   }
 
-  onSignup() {
+  async onSignup(): Promise<void> {
     this.errorMessage = '';
-    
+
+    if (this.isLoading) {
+      return;
+    }
+
+    if (!this.user.name.trim() || !this.user.email.trim() || !this.user.password) {
+      this.errorMessage = 'Completa todos los campos.';
+      return;
+    }
+
+    if (this.user.password.length < 6) {
+      this.errorMessage = 'La contraseña debe tener al menos 6 caracteres.';
+      return;
+    }
+
     if (this.user.password !== this.confirmPassword) {
       this.errorMessage = 'Las contraseñas no coinciden.';
       return;
     }
 
-    const success = this.authService.register(this.user);
+    this.isLoading = true;
 
-    if (success) {
-      this.router.navigate(['/checkout']);
-    } else {
-      this.errorMessage = 'Este correo electrónico ya está registrado.';
+    try {
+      const success = await this.authService.register(this.user);
+
+      if (success) {
+        this.router.navigate(['/checkout']);
+      } else {
+        this.errorMessage = 'No se pudo completar el registro. Revisa tus datos.';
+      }
+    } catch (error) {
+      console.error('Error de registro:', error);
+      this.errorMessage = 'Ocurrió un error al registrar la cuenta.';
+    } finally {
+      this.isLoading = false;
     }
   }
 }

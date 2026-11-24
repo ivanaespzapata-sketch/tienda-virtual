@@ -21,11 +21,18 @@ export class Home implements OnInit, OnDestroy {
   // Filtros
   searchQuery: string = '';
   selectedCategory: string = 'Todas';
-  maxPrice: number = 300;
+  maxPrice: number = 1500;
   sortOrder: string = 'default';
 
-  // Categorías completas solicitadas
-  categoriesList: string[] = ['Todas', 'Aretes', 'Collares', 'Anillos', 'Pulseras', 'Charms'];
+  // Categorías alineadas exactamente con shop.service.ts
+  categoriesList: string[] = [
+    'Todas',
+    'Anillos',
+    'Aretes',
+    'Charms',
+    'Collares',
+    'Pulseras'
+  ];
 
   // Notificación flotante (Toast)
   toastMessage: string | null = null;
@@ -47,12 +54,17 @@ export class Home implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.products = this.shopService.getProducts();
 
-    // Nos suscribimos al carrito para mantener actualizado el estado en tiempo real
+    if (this.products.length > 0) {
+      const highestPrice = Math.max(...this.products.map(p => p.price));
+      if (highestPrice > this.maxPrice) {
+        this.maxPrice = Math.ceil(highestPrice / 100) * 100;
+      }
+    }
+
     this.cartSub = this.shopService.cart$.subscribe(items => {
       this.currentCartItems = items;
     });
 
-    // Escucha la búsqueda enviada desde la lupa en el Header
     this.route.queryParams.subscribe(params => {
       if (params['q']) {
         this.searchQuery = params['q'];
@@ -68,34 +80,38 @@ export class Home implements OnInit, OnDestroy {
   }
 
   applyFilters(): void {
-    this.filteredProducts = this.products.filter(product => {
-      const query = this.searchQuery.toLowerCase().trim();
+    const query = this.searchQuery.toLowerCase().trim();
 
-      // Busca coincidencia en el título O en la categoría
-      const matchesSearch = product.title.toLowerCase().includes(query) ||
-                            product.category.toLowerCase().includes(query);
+    const list = this.products.filter(product => {
+      const matchesSearch =
+        !query ||
+        product.title.toLowerCase().includes(query) ||
+        product.category.toLowerCase().includes(query);
 
-      const matchesCategory = this.selectedCategory === 'Todas' || 
-                            product.category.toLowerCase() === this.selectedCategory.toLowerCase();
-                            
+      const matchesCategory =
+        this.selectedCategory === 'Todas' ||
+        product.category.toLowerCase() === this.selectedCategory.toLowerCase();
+
       const matchesPrice = product.price <= this.maxPrice;
 
       return matchesSearch && matchesCategory && matchesPrice;
     });
 
     if (this.sortOrder === 'price-asc') {
-      this.filteredProducts.sort((a, b) => a.price - b.price);
+      list.sort((a, b) => a.price - b.price);
     } else if (this.sortOrder === 'price-desc') {
-      this.filteredProducts.sort((a, b) => b.price - a.price);
+      list.sort((a, b) => b.price - a.price);
+    } else if (this.sortOrder === 'popularity') {
+      list.sort((a, b) => (b.reviewsCount || 0) - (a.reviewsCount || 0) || (b.rating || 0) - (a.rating || 0));
     }
+
+    this.filteredProducts = list;
   }
 
-  // Alias por si el HTML u otro componente invoca addToCart
   addToCart(product: Product): void {
     this.toggleCart(product);
   }
 
-  // Alterna agregar o eliminar del carrito y dispara el mensaje correspondiente
   toggleCart(product: Product): void {
     const isAdded = this.shopService.toggleCart(product);
 
@@ -106,12 +122,10 @@ export class Home implements OnInit, OnDestroy {
     }
   }
 
-  // Verifica si el producto ya está en el carrito de forma reactiva
   isInCart(productId: number): boolean {
     return this.currentCartItems.some(item => item.product.id === productId);
   }
 
-  // Maneja la visibilidad de la alerta flotante
   private showToast(message: string, type: 'success' | 'danger'): void {
     this.toastMessage = message;
     this.toastType = type;
@@ -133,7 +147,6 @@ export class Home implements OnInit, OnDestroy {
     return this.shopService.isInWishlist(productId);
   }
 
-  // Métodos para la Vista Previa Rápida
   openQuickView(product: Product): void {
     this.selectedProduct = product;
   }

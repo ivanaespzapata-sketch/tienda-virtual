@@ -1,9 +1,10 @@
 // src/app/pages/product-detail/product-detail.ts
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { ShopService } from '../../services/shop.service';
-import { Product } from '../../models';
+import { Product, CartItem } from '../../models';
 
 @Component({
   selector: 'app-product-detail',
@@ -12,9 +13,16 @@ import { Product } from '../../models';
   templateUrl: './product-detail.html',
   styleUrl: './product-detail.css'
 })
-export class ProductDetail implements OnInit {
+export class ProductDetail implements OnInit, OnDestroy {
   product: Product | undefined;
   quantity: number = 1;
+
+  // Variantes / acabados opcionales para joyería
+  variants: string[] = ['Oro 14k', 'Plata Sterling', 'Oro Rosé'];
+  selectedVariant: string = 'Oro 14k';
+
+  private cartSub!: Subscription;
+  private currentCartItems: CartItem[] = [];
 
   constructor(
     private route: ActivatedRoute,
@@ -26,6 +34,16 @@ export class ProductDetail implements OnInit {
     if (idParam) {
       const productId = +idParam;
       this.product = this.shopService.getProductById(productId);
+    }
+
+    this.cartSub = this.shopService.cart$.subscribe(items => {
+      this.currentCartItems = items;
+    });
+  }
+
+  ngOnDestroy(): void {
+    if (this.cartSub) {
+      this.cartSub.unsubscribe();
     }
   }
 
@@ -40,18 +58,25 @@ export class ProductDetail implements OnInit {
   }
 
   addToCart(): void {
-    if (this.product) {
-      // Agregamos el producto y ajustamos la cantidad si es mayor a 1
-      for (let i = 0; i < this.quantity; i++) {
-        this.shopService.toggleCart(this.product);
-      }
-      alert('¡Producto agregado al carrito con éxito!');
+    if (!this.product) return;
+
+    const alreadyInCart = this.currentCartItems.some(item => item.product.id === this.product!.id);
+
+    // Si aún no está en el carrito, lo agregamos una vez con toggleCart
+    if (!alreadyInCart) {
+      this.shopService.toggleCart(this.product);
     }
+
+    // Si eligió más de 1 unidad, ajustamos la cantidad exacta en el carrito
+    if (this.quantity > 1) {
+      this.shopService.updateQuantity(this.product.id, this.quantity);
+    }
+
+    alert(`¡${this.quantity} x ${this.product.title} (${this.selectedVariant}) agregado al carrito con éxito!`);
   }
 
   isInCart(): boolean {
     if (!this.product) return false;
-    // Lógica opcional para verificar si está en el carrito
-    return false; 
+    return this.currentCartItems.some(item => item.product.id === this.product!.id);
   }
 }

@@ -1,9 +1,11 @@
+
 import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { ShopService } from '../../services/shop.service';
+import { AuthService } from '../../services/auth.services';
 import { CartItem } from '../../models';
 
 @Component({
@@ -16,7 +18,7 @@ import { CartItem } from '../../models';
 export class HeaderComponent implements OnInit, OnDestroy {
   isSearchOpen = false;
   searchQuery = '';
-  
+
   wishlistCount = 0;
   cartCount = 0;
   cartTotal = 0;
@@ -30,7 +32,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   constructor(
     private shopService: ShopService,
-    private cdr: ChangeDetectorRef // <-- Inyectamos el detector de cambios
+    private cdr: ChangeDetectorRef,
+    private authService: AuthService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -40,7 +44,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
       const total = items.reduce((acc, item) => acc + (item.product.price * item.quantity), 0);
       this.cartTotal = total;
       this.subtotal = total;
-      this.cdr.detectChanges(); // <-- Forzamos el redibujado inmediato de la vista
+      this.cdr.detectChanges();
     });
 
     this.wishlistSub = this.shopService.wishlist$.subscribe((ids: number[]) => {
@@ -72,8 +76,16 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.shopService.removeFromCart(productId);
   }
 
-  logout(): void {
-    this.shopService.logout();
+  async logout(): Promise<void> {
+    try {
+      await this.authService.logout();
+      this.currentUser = null;
+      this.cdr.detectChanges();
+      await this.router.navigate(['/']);
+    } catch (error) {
+      console.error('Error al cerrar sesión:', error);
+      alert('No se pudo cerrar sesión. Intenta nuevamente.');
+    }
   }
 
   ngOnDestroy(): void {

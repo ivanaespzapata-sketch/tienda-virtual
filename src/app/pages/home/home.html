@@ -1,17 +1,17 @@
 <!-- HERO BANNER CON LA FOTO Y TEXTOS BLANCOS -->
 <section class="position-relative d-flex align-items-center text-white min-vh-100" 
-         style="background: linear-gradient(rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.15)), url('https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=1600') center/cover no-repeat;">
+         style="background: linear-gradient(rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.25)), url('https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=1600') center/cover no-repeat;">
   <div class="container pt-5">
     <div class="row justify-content-end">
-      <div class="col-md-6 col-lg-5 text-start pe-lg-5">
+      <div class="col-12 col-md-7 col-lg-5 text-start pe-lg-5">
         <p class="fst-italic fs-5 mb-1 text-white-50" style="font-family: Georgia, serif;">Joyería fina</p>
-        <h1 class="display-4 fw-normal text-uppercase mb-3 text-white" style="font-family: Georgia, serif; letter-spacing: 2px; line-height: 1.2;">
+        <h1 class="display-5 display-md-4 fw-normal text-uppercase mb-3 text-white" style="font-family: Georgia, serif; letter-spacing: 2px; line-height: 1.2;">
           UN REGALO PARA<br>ALGUIEN ESPECIAL
         </h1>
         <p class="small text-white-50 mb-4 fw-light" style="line-height: 1.6;">
           Descubre colecciones exclusivas diseñadas con la más alta elegancia. Piezas finas únicas creadas para momentos inolvidables.
         </p>
-        <div class="d-flex gap-3">
+        <div class="d-flex flex-wrap gap-3">
           <a href="#coleccion" class="btn btn-light rounded-0 px-4 py-2 text-uppercase fw-semibold fs-7" style="letter-spacing: 1px;">
             COMPRA AHORA
           </a>
@@ -29,7 +29,7 @@
   <div class="container py-4">
     <div class="row align-items-center g-4">
       <!-- MOSAICO FOTOGRÁFICO DE LA IZQUIERDA -->
-      <div class="col-md-6">
+      <div class="col-12 col-md-6">
         <div class="row g-2 align-items-center">
           <div class="col-6">
             <img src="https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=600" alt="Modelo Joyería" class="img-fluid rounded-0 shadow-sm w-100">
@@ -41,12 +41,12 @@
       </div>
 
       <!-- TEXTO DE LA DERECHA -->
-      <div class="col-md-6 ps-lg-5 text-center text-md-start">
-        <p class="fst-italic text-warning mb-1" style="font-family: Georgia, serif; color: #c89d7c !important;">El detalle más especial</p>
+      <div class="col-12 col-md-6 ps-lg-5 text-center text-md-start">
+        <p class="fst-italic mb-1" style="font-family: Georgia, serif; color: #c89d7c !important;">El detalle más especial</p>
         <h2 class="display-6 text-uppercase fw-normal mb-3" style="font-family: Georgia, serif; letter-spacing: 3px; color: #2a2a2a;">
           TIENDA<br>DE JOYERÍA
         </h2>
-        <div class="border-start border-warning border-2 ps-3 my-3" style="border-color: #c89d7c !important;">
+        <div class="border-start border-2 ps-3 my-3 text-start" style="border-color: #c89d7c !important;">
           <p class="text-muted small mb-0 fw-light">
             Diseños sofisticados de alta gama con diamantes y metales preciosos seleccionados a mano.
           </p>
@@ -57,7 +57,7 @@
 </section>
 
 <!-- BARRA DE BÚSQUEDA PREDICTIVA Y FILTROS -->
-<div class="container my-4 p-4 bg-light rounded-4 shadow-sm">
+<div class="container my-4 p-3 p-md-4 bg-light rounded-4 shadow-sm">
   <div class="row g-3 align-items-center">
     <!-- Buscador Predictivo -->
     <div class="col-12 col-md-4">
@@ -77,13 +77,14 @@
     <!-- Filtro por Precio Máximo -->
     <div class="col-6 col-md-3">
       <label class="form-label small text-muted mb-0">Precio Máx: ${{ maxPrice }}</label>
-      <input type="range" [(ngModel)]="maxPrice" (input)="applyFilters()" min="50" max="300" step="10" class="form-range">
+      <input type="range" [(ngModel)]="maxPrice" (input)="applyFilters()" min="300" max="1500" step="50" class="form-range">
     </div>
 
     <!-- Ordenamiento -->
     <div class="col-12 col-md-2">
       <select [(ngModel)]="sortOrder" (change)="applyFilters()" class="form-select">
         <option value="default">Ordenar por</option>
+        <option value="popularity">Popularidad</option>
         <option value="price-asc">Precio: Menor a Mayor</option>
         <option value="price-desc">Precio: Mayor a Menor</option>
       </select>
@@ -115,7 +116,7 @@
       <div *ngFor="let product of filteredProducts" class="col-12 col-sm-6 col-md-4 col-lg-3">
         <div class="card h-100 border-0 bg-transparent text-start">
           <!-- IMAGEN CON BOTÓN WISHLIST Y QUICK VIEW -->
-          <div class="position-relative rounded-4 overflow-hidden mb-3" style="background-color: #f6f5f3; min-height: 250px;">
+          <div class="position-relative rounded-4 overflow-hidden mb-3" style="background-color: #f6f5f3; min-height: 240px;">
             
             <!-- Botón Favoritos -->
             <button type="button" (click)="$event.stopPropagation(); $event.preventDefault(); toggleWishlist(product.id)" class="btn btn-sm btn-white rounded-circle position-absolute top-0 end-0 m-3 shadow-sm z-3" title="Favoritos">
@@ -128,7 +129,7 @@
             </button>
 
             <a [routerLink]="['/product', product.id]" class="d-flex align-items-center justify-content-center h-100 p-3">
-              <img [src]="product.id === 4 ? 'https://images.unsplash.com/photo-1573408301185-9146fe634ad0?auto=format&fit=crop&w=600&q=80' : product.image" [alt]="product.title" class="img-fluid" style="max-height: 190px; object-fit: contain;">
+              <img [src]="product.image" [alt]="product.title" class="img-fluid" style="max-height: 190px; object-fit: contain;">
             </a>
           </div>
 
@@ -161,20 +162,20 @@
 
 <!-- MODAL QUICK VIEW -->
 <div *ngIf="selectedProduct" class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.6); z-index: 1055;">
-  <div class="modal-dialog modal-dialog-centered modal-lg">
+  <div class="modal-dialog modal-dialog-centered modal-lg mx-3 mx-sm-auto">
     <div class="modal-content border-0 rounded-4 overflow-hidden shadow-lg">
       <div class="modal-body p-0 position-relative">
         
-        <button (click)="closeQuickView()" type="button" class="btn-close position-absolute top-0 end-0 m-3 z-3" aria-label="Close"></button>
+        <button (click)="closeQuickView()" type="button" class="btn-close bg-white rounded-circle p-2 position-absolute top-0 end-0 m-3 z-3 shadow-sm" aria-label="Close"></button>
         
         <div class="row g-0">
           <!-- Imagen del producto -->
-          <div class="col-md-6 bg-light d-flex align-items-center justify-content-center p-4">
-            <img [src]="selectedProduct.id === 4 ? 'https://images.unsplash.com/photo-1573408301185-9146fe634ad0?auto=format&fit=crop&w=600&q=80' : selectedProduct.image" [alt]="selectedProduct.title" class="img-fluid rounded-3" style="max-height: 280px; object-fit: contain;">
+          <div class="col-12 col-md-6 bg-light d-flex align-items-center justify-content-center p-4">
+            <img [src]="selectedProduct.image" [alt]="selectedProduct.title" class="img-fluid rounded-3" style="max-height: 260px; object-fit: contain;">
           </div>
           
           <!-- Información y botón -->
-          <div class="col-md-6 p-4 d-flex flex-column justify-content-center">
+          <div class="col-12 col-md-6 p-4 d-flex flex-column justify-content-center">
             <span class="badge bg-secondary mb-2 align-self-start text-uppercase">{{ selectedProduct.category }}</span>
             <h4 class="fw-bold text-dark mb-2">{{ selectedProduct.title }}</h4>
             <h3 class="text-dark fw-semibold mb-3">${{ selectedProduct.price | number:'1.2-2' }}</h3>
@@ -200,7 +201,7 @@
 <!-- NOTIFICACIÓN FLOTANTE (TOAST) -->
 <div 
   *ngIf="toastMessage" 
-  class="position-fixed bottom-0 end-0 m-4 p-3 rounded-3 shadow-lg text-white z-3 d-flex align-items-center gap-2"
+  class="position-fixed bottom-0 end-0 m-3 m-sm-4 p-3 rounded-3 shadow-lg text-white z-3 d-flex align-items-center gap-2"
   [ngClass]="toastType === 'success' ? 'bg-dark' : 'bg-danger'"
   style="transition: all 0.3s ease-in-out;"
 >

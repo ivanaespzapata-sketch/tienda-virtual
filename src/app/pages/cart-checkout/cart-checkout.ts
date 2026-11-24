@@ -29,6 +29,13 @@ export class CartCheckout implements OnInit {
   couponMessage = '';
   couponError = false;
 
+  // Variables de método de pago y procesamiento
+  paymentMethod = '';
+  cardNumber = '';
+  cardExpiry = '';
+  cardCvv = '';
+  isProcessing = false;
+
   // Estado del flujo de compra (Thank You Page)
   isCompleted = false;
   orderNumber = '';
@@ -52,7 +59,7 @@ export class CartCheckout implements OnInit {
     }
   }
 
-applyCoupon(): void {
+  applyCoupon(): void {
     const code = this.couponCode.trim().toUpperCase();
     if (code === 'PROFE100') {
       this.couponApplied = true;
@@ -80,16 +87,15 @@ applyCoupon(): void {
     this.shopService.removeFromCart(productId);
   }
 
-calculateTotals(): void {
+  calculateTotals(): void {
     this.subtotal = this.cartItems.reduce((acc, item) => acc + (item.product.price * item.quantity), 0);
-    
-    // Validamos qué cupón está activo para calcular el descuento correcto
+
     const code = this.couponCode.trim().toUpperCase();
     if (this.couponApplied) {
       if (code === 'PROFE100') {
-        this.discountAmount = this.subtotal; // 100%
+        this.discountAmount = this.subtotal;
       } else if (code === 'VALENY') {
-        this.discountAmount = this.subtotal * 0.10; // 10%
+        this.discountAmount = this.subtotal * 0.10;
       } else {
         this.discountAmount = 0;
       }
@@ -103,18 +109,22 @@ calculateTotals(): void {
   }
 
   processOrder(formValue: any): void {
-    if (this.cartItems.length === 0) return;
-    
-    this.customerName = formValue.name || 'Cliente';
-    // Generamos un número de orden aleatorio de 6 dígitos
-    this.orderNumber = Math.floor(100000 + Math.random() * 900000).toString();
-    
-    // Vaciamos el carrito a través del servicio
-    this.cartItems.forEach(item => {
-      this.shopService.removeFromCart(item.product.id);
-    });
+    if (this.cartItems.length === 0 || this.isProcessing) return;
 
-    this.isCompleted = true;
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    this.isProcessing = true;
+    this.customerName = formValue.name || 'Cliente';
+    this.paymentMethod = formValue.paymentMethod || this.paymentMethod || 'Tarjeta de Crédito / Débito';
+
+    setTimeout(() => {
+      this.orderNumber = Math.floor(100000 + Math.random() * 900000).toString();
+
+      this.cartItems.forEach(item => {
+        this.shopService.removeFromCart(item.product.id);
+      });
+
+      this.isProcessing = false;
+      this.isCompleted = true;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 2000);
   }
 }
